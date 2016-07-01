@@ -1,0 +1,242 @@
+<link rel="import" href="/bower_components/polymer/polymer.html">
+
+<dom-module id="poly-nav">
+	<template>
+		<style>
+			:host {
+				display: flex;
+				flex-direction: column;
+				background-color: #fff;
+				box-shadow: 1px 0 2px #ccc;
+				position: fixed;
+				top: 0;
+				left: 0;
+				width: 100%;
+			}
+			@media screen and (min-width: 800px) {
+				:host {
+					width: 300px;
+					height: 100%;
+				}
+
+			}
+
+			#logo {
+				display: inline-block;
+				margin-right: 14px;
+				width: 30px;
+			}
+
+			#header {
+				display: flex;
+				justify-content: space-between;
+				border-bottom: 1px solid #e0e0e0;
+				color: #555;
+				font-family: 'Open Sans', sans-serif;
+				font-size: 20px;
+				font-weight: bold;
+				padding: 12px 14px;
+			}
+
+			#header .fa {
+				font-size: 20px;
+			}
+
+
+			#header-links {
+				display: flex;
+				align-items: center;
+			}
+
+			#items-container {
+				/*display: none;*/
+			}
+
+			#toggle {
+				font-size: 24px;
+				cursor: pointer;
+				transition: all .5s;
+				transform-origin: center center;
+				opacity: 0;
+				pointer-events: none;
+			}
+
+			#toggle.show {
+				opacity: 1;
+				pointer-events: auto;
+			}
+
+			#toggle.open {
+				transform: rotateZ(90deg);
+			}
+
+			@media screen and (max-width: 800px) {
+				#items-container {
+					top: 58px;
+					position: fixed;
+					left: 0;
+					transition: transform .5s;
+					transform: scaleY(0);
+					right: 0;
+					transform-origin: top center;
+					background-color: #ffffff;
+				}
+				#items-container.open {
+					transform: none;
+				}
+			}
+
+		</style>
+		<div id="header">
+			<div id="header-links">
+				<img src="../logo.svg" id="logo">
+				<span>PolyPie [[active]]</span>
+			</div>
+			<span id="toggle">&raquo;</span>
+		</div>
+		<div id="items-container">
+			<content id="items"></content>
+		</div>
+	</template>
+
+	<script>
+		var appRouter = document.querySelector('app-router');
+		Polymer({
+			is: 'poly-nav',
+			properties: {
+				active: String,
+				isMobile: Boolean,
+				isOpen: {
+					type: Boolean,
+					value: false
+				},
+				wasEverMobile: {
+					type: Boolean,
+					value: false
+				}
+			},
+			attached: function(active) {
+				var activePath = appRouter.activeRoute.getAttribute('path');
+				var activeNavItems = this.getContentChildren('#items').forEach(function(navItem) {
+					var navPath = navItem.getAttribute('path');
+					if (activePath === navPath || (activePath.indexOf(navPath) === 0 && navPath !== '/')) {
+						navItem.setAttribute('active', true);
+					}
+				});
+
+				// Event listeners
+				this.addEventListener('routeChange', this.onRouteChange);
+				window.addEventListener('resize', this.onResize.bind(this));
+			},
+
+			ready: function() {
+				this.onResize();
+			},
+			detached: function() {
+				this.removeEventListener('routeChange', this.onRouteChange);
+				window.removeEventListener('resize', this.onResize.bind(this));
+			},
+			listeners: {
+				'toggle.tap': 'onToggle'
+			},
+			onToggle: function() {
+				this.isOpen = !this.isOpen;
+				if (this.isOpen) {
+					this.$.toggle.classList.add('open');
+					this.$['items-container'].classList.add('open');
+				} else {
+					this.$.toggle.classList.remove('open');
+					this.$['items-container'].classList.remove('open');
+				}
+			},
+			onRouteChange: function(ev) {
+				var path = ev.detail.path;
+				this.getContentChildren('#items').forEach(function(navItem) {
+					var navPath = navItem.getAttribute('path');
+					if (navPath === path || (path.indexOf(navPath) === 0 && navPath !== '/')) {
+						navItem.setAttribute('active', true);
+					} else {
+						navItem.removeAttribute('active');
+					}
+				});
+				appRouter.go(path);
+				this.onToggle();
+			},
+			onResize: function(e) {
+				if (window.innerWidth <= 800) {
+					this.isMobile = true;
+					this.$.toggle.classList.add('show');
+				} else {
+					this.isMobile = false;
+					this.$.toggle.classList.remove('show');
+				}
+			}
+		});
+	</script>
+</dom-module>
+
+<dom-module id="poly-nav-item">
+	<template>
+		<style>
+			:host {
+				display: block;
+			}
+
+			#nav-item-wrapper {
+				display: flex;
+				align-items: center;
+				padding: 12px 26px;
+				font-size: 16;
+				cursor: pointer;
+				border-bottom: 1px solid transparent;
+				border-top: 1px solid transparent;
+			}
+
+			::content .icon {
+				color: #666;
+			}
+
+			#nav-text {
+				margin-left: 1.1em;
+				display: inline-block;
+				color: #666;
+			}
+
+			#nav-item-wrapper.active {
+				background-color: #eceff1;
+				border-bottom: 1px solid #e0e0e0;
+				border-top: 1px solid #e0e0e0;
+			}
+		</style>
+		<div id="nav-item-wrapper">
+			<content select=".icon" id="icon"></content> <span id="nav-text">[[text]]</span>
+		</div>
+	</template>
+	<script>
+		Polymer({
+			is: 'poly-nav-item',
+			properties: {
+				path: String,
+				text: String,
+				active: Boolean
+			},
+			listeners: {
+				'nav-item-wrapper.tap': 'changeRoute'
+			},
+			observers: [
+				'toggleActive(active)'
+			],
+			changeRoute: function() {
+				this.fire('routeChange', {path: this.path});
+			},
+			toggleActive: function(active) {
+				if (active) {
+					this.toggleClass('active', true, this.$['nav-item-wrapper']);
+				} else {
+					this.toggleClass('active', false, this.$['nav-item-wrapper']);
+				}
+			}
+		});
+	</script>
+</dom-module>
+

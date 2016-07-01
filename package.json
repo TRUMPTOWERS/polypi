@@ -1,0 +1,7 @@
+{
+  "name": "polypi",
+  "version": "1.0.0",
+  "scripts": {
+    "vulcanize": "vulcanize --abspath . src/elements.html --inline-scripts --inline-css --strip-comments -o ./dist/static/elements.html"
+  }
+}

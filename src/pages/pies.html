@@ -1,0 +1,128 @@
+<link rel="import" href="/bower_components/polymer/polymer.html">
+<link rel="import" href="/bower_components/paper-toast/paper-toast.html">
+<link rel="import" href="/bower_components/paper-dialog/paper-dialog.html">
+<link rel="import" href="/src/poly-page/polypage.html">
+<link rel="import" href="/src/poly-card/polycard.html">
+
+<dom-module id="page-pies">
+	<template>
+		<style>
+			:host { display: block; }
+			poly-page {
+				--page-header-bg: #ff6a00;
+			}
+
+			#cards-container {
+				display: flex;
+				flex-flow: row wrap;
+				justify-content: flex-start;
+				padding: 40px;
+			}
+
+			@media screen and (max-width: 800px) {
+				#cards-container {
+					flex-flow: column nowrap;
+				}
+			}
+
+			poly-card {
+				margin: 20px;
+			}
+
+			#noremains {
+				--paper-toast-background-color: red;
+				--paper-toast-color: white;
+			}
+
+			#success {
+				--paper-toast-background-color: #ffbf00;
+				--paper-toast-color: #333;
+			}
+		</style>
+		<poly-page header="Available Pies">
+			<div id="cards-container">
+				<template is="dom-repeat" items="{{pies}}" id="pieslist" observe="slices">
+					<poly-card pie="[[item]]"></poly-card>
+				</template>
+			</div>
+			<paper-dialog modal id="purchasing">
+				<h2>Purchasing...</h2>
+				<paper-dialog-scrollable>
+					Please wait while we process your order...
+				</paper-dialog-scrollable>
+				<div class="buttons"></div>
+			</paper-dialog>
+
+			<paper-toast id="noremains"
+				horizontal-align="right"
+				vertical-align="top"
+				text="Oops... we ran out of your specified pie!">
+			</paper-toast>
+			<paper-toast id="success"
+				horizontal-align="right"
+				vertical-align="top"
+				text="Successfully purchased pie!">
+			</paper-toast>
+		</poly-page>
+	</template>
+	<script>
+		Polymer({
+			is: 'page-pies',
+			properties: {
+				pies: {
+					type: Array,
+					value: [
+						{
+							"id": 1,
+							"name": "Apple Pie",
+							"imageUrl": "http://stash.truex.com/tech/bakeoff/apple_pie.jpg",
+							"price": 1.50,
+							"slices": 10,
+							"labels": ["vegetarian", "vegan", "sweet"]
+						},
+						{
+							"id": 2,
+							"name": "Pecan Pie",
+							"imageUrl": "http://stash.truex.com/tech/bakeoff/pecan_pie.jpg",
+							"price": 2.25,
+							"slices": 14,
+							"labels": ["vegetarian", "vegan", "sweet"]
+						},
+						{
+							"id": 3,
+							"name": "Shepherd's Pie",
+							"imageUrl": "http://stash.truex.com/tech/bakeoff/shepherds_pie.jpg",
+							"price": 8.95,
+							"slices": 8,
+							"labels": ["gluten_free", "savory"]
+						}
+					],
+					notify: true
+				}
+			},
+			attached: function() {
+				this.addEventListener('onPurchase', this.onPurchase);
+			},
+			detached: function() {
+				this.removeEventListener('onPurchase', this.onPurchase);
+			},
+			onPurchase: function(ev) {
+				this.$.purchasing.open();
+				this.async(function() {
+					this.$.purchasing.close();
+					this.$.success.open();
+					this.pies.forEach(function(pie, index) {
+						if (pie.id === ev.detail.pie.id) {
+							// update slices
+							this.set('pies.' + index + '.slices', 0);
+						}
+					}.bind(this));
+				}.bind(this), 1000);
+			},
+			shouldDisablePie: function(pie) {
+				console.log(pie);
+				return pie.slices === 0;
+			}
+		});
+	</script>
+</dom-module>

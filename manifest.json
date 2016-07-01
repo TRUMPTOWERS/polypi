@@ -1,0 +1,6 @@
+{
+  "name": "polypi",
+  "short_name": "polypi",
+  "start_url": "/",
+  "display": "standalone"
+}

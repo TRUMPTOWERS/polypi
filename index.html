@@ -1,0 +1,53 @@
+<!doctype html>
+
+<html>
+	<head>
+		<title>PolyPi - Pies for All</title>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<link rel="manifest" href="/manifest.json">
+		<link href='https://fonts.googleapis.com/css?family=Open+Sans:400,300,700,400italic,300italic|Roboto+Slab:300,400' rel='stylesheet' type='text/css'>
+		<script src="/bower_components/webcomponentsjs/webcomponents-lite.js"></script>
+		<script> window.Polymer = { dom: 'shadow' }; </script>
+		<link rel="stylesheet" href="/bower_components/font-awesome/css/font-awesome.css">
+		<link rel="import" href="/src/elements.html">
+		<style>
+			* {
+				box-sizing: border-box;
+			}
+			html {
+				height: 100%;
+			}
+			body {
+				font-family: "Open Sans", sans-serif;
+				margin: 0;
+				padding: 0;
+				background-color: #fafafa;
+				height: 100%;
+				min-height: 100%;
+			}
+		</style>
+	</head>
+	<body>
+		<poly-nav>
+			<poly-nav-item path="/" text="Home">
+				<span class="icon">
+					<i class="fa fa-home"></i>
+				</span>
+			</poly-nav-item>
+			<poly-nav-item path="/pies" text="Pies">
+				<span class="icon">
+					<i class="fa fa-pie-chart"></i>
+				</span>
+			</poly-nav-item>
+		</poly-nav>
+
+		<polypi-app>
+			<app-router mode="hash">
+				<app-route path="/" element="page-home"></app-route>
+				<app-route path="/pies" element="page-pies"></app-route>
+				<app-route path="/pies/:pieId" element="page-pie"></app-route>
+			</app-router>
+		</polypi-app>
+	</body>
+</html>

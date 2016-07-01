@@ -1,0 +1,27 @@
+<link rel="import" href="/bower_components/polymer/polymer.html">
+
+<dom-module id="polypi-app">
+  <template>
+    <style>
+      :host {
+		  display: block;
+		  width: 100%;
+		  height: 100%;
+		  padding-left: 300px;
+	  }
+	  @media screen and (max-width: 800px) {
+		  :host {
+			  padding-left: 0;
+			  margin-top: 54px;
+		  }
+	  }
+    </style>
+	<content></content>
+  </template>
+
+  <script>
+    Polymer({
+      is: 'polypi-app',
+    });
+  </script>
+</dom-module>

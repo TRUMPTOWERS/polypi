@@ -1,0 +1,171 @@
+<link rel="import" href="/bower_components/polymer/polymer.html">
+<link rel="import" href="/bower_components/paper-material/paper-material.html">
+<dom-module id="page-pie">
+	<template>
+		<style>
+			:host {
+				display: block;
+			}
+
+			poly-page {
+				--page-header-bg: #00e5ff;
+			}
+
+			.card {
+				display: flex;
+				flex-direction: column;
+				margin: 20px 40px;
+				padding: 40px;
+				background-color: #fff;
+				box-shadow: 0 3px 2px rgba(0, 0, 0, .3);
+			}
+
+			.card-columns {
+				display: flex;
+				flex-direction: row;
+			}
+
+
+			.card header {
+				font-family: 'Roboto Slab', serif;
+				font-size: 30px;
+				margin-bottom: 20px;
+			}
+
+			#description p {
+				margin: 0;
+			}
+
+			#description p + p {
+				margin-top: 24px;
+			}
+
+			#content {
+				margin-left: 20px;
+				color: #444;
+				display: flex;
+				flex-direction: column;
+				justify-content: space-around;
+			}
+
+			#image img {
+				width: 300px;
+			}
+
+			#sales-info {
+				display: flex;
+				justify-content: space-between;
+				font-size: 18px;
+			}
+
+			#sales-info .label {
+				text-transform: uppercase;
+				font-size: 14px;
+			}
+
+			.purchase {
+				display: flex;
+			}
+
+			.purchase > * {
+				flex: 1 1;
+			}
+
+			@media screen and (max-width: 800px) {
+				.card-columns {
+					flex-direction: column;
+				}
+
+				#content {
+					margin-left: 0;
+				}
+
+				#image img {
+					width: 100%;
+				}
+			}
+
+			.purchase-header {
+				font-weight: bold;
+				margin-bottom: 14px;
+			}
+		</style>
+		<poly-page header="[[pie.name]]">
+			<div class="card">
+				<header>[[pie.name]] Guide</header>
+				<div class="card-columns">
+					<div id="image">
+						<img src$="[[pie.imageUrl]]" alt$="[[pie.name]]">
+					</div>
+					<div id="content">
+						<div id="description">
+							<p>
+								Pies are defined by their crusts. A filled pie (also single-crust or bottom-crust), has pastry lining the baking dish, and the filling is placed on top of the pastry but left open. A top-crust pie has the filling in the bottom of the dish and is covered with a pastry or other covering before baking. A two-crust pie has the filling completely enclosed in the pastry shell. Shortcrust pastry is a typical kind of pastry used for pie crusts, but many things can be used, including baking powder biscuits, mashed potatoes, and crumbs.
+							</p>
+						</div>
+						<div id="sales-info">
+							<div class="price info">
+								<span class="label">Price: </span>
+								$[[pie.price]]
+							</div>
+							<div class="remaining info">
+								<span class="label">Remaining: </span>
+								[[pie.slices]]
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+
+			<div class="card">
+				<header>Customers who bought this pie</header>
+				<template is="dom-if" if="[[hasPurchases]]">
+					<div class="purchase purchase-header">
+						<div>Customer Name</div>
+						<div>Number of Slices Bought</div>
+					</div>
+					<template is="dom-repeat" items="{{pie.purchases}}">
+						<div class="purchase">
+							<div class="purchaser">[[item.username]]</div>
+							<div class="amount">[[item.slices]]</div>
+						</div>
+					</template>
+				</template>
+			</div>
+		</poly-page>
+	</template>
+	<script>
+		Polymer({
+			is: 'page-pie',
+			properties: {
+				pie: {
+					type: Object,
+					value: {
+						"id": 1,
+						"name": "Apple Pie",
+						"imageUrl": "http://stash.truex.com/tech/bakeoff/apple_pie.jpg",
+						"price": 1.50,
+						"slices": 10,
+						"labels": ["vegetarian", "vegan", "sweet"],
+						"purchases": [
+							{"username": "foo", "slices": 10},
+							{"username": "bar", "slices": 11},
+							{"username": "baz", "slices": 12},
+							{"username": "John", "slices": 13},
+							{"username": "James", "slices": 14},
+							{"username": "Jack", "slices": 15}
+						]
+
+					}
+				},
+				hasPurchases: {
+					type: Number,
+					computed: 'hasPurchasesFn(pie)'
+				}
+			},
+			hasPurchasesFn: function(pie) {
+				return pie.purchases.length > 0;
+			}
+		});
+	</script>
+</dom-module>

@@ -22,3 +22,6 @@ _testmain.go
 *.exe
 *.test
 *.prof
+dist/
+node_modules/
+bower_components/
