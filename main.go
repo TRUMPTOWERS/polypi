@@ -5,6 +5,9 @@ import (
 	"net/http"
 	"time"
 
+	"gopkg.in/redis.v4"
+
+	"github.com/TRUMPTOWERS/polypi/pie/piehandler"
 	"github.com/gorilla/mux"
 )
 
@@ -19,13 +22,17 @@ func main() {
 		MaxHeaderBytes: 1 << 20,
 	}
 
+	client := redis.NewClient(&redis.Options{
+		Addr: "localhost:6379",
+	})
+
 	index := http.FileServer(NewOneFile("index.html"))
 	r.Methods("GET").Path("/").Handler(index)
 
 	static := http.StripPrefix("/static/", http.FileServer(http.Dir("./static")))
 	r.Methods("GET").Path("/static/").Handler(static)
 
-	var pie http.Handler
+	pie := piehandler.Handler{DS: client}
 	r.Methods("GET").Path("/pie/{id:[0-9]+}.json").Handler(pie).Name("pie")
 
 	var purchase http.Handler

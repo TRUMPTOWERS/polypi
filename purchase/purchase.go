@@ -14,7 +14,6 @@ const (
 type DataPurchase struct {
 	Customer  int64
 	Amount    int
-	Pie       int64
 	Timestamp time.Time
 }
 

@@ -95,6 +95,7 @@ func main() {
 			ID:       p.ID,
 			Name:     p.Name,
 			ImageURL: p.ImageURL,
+			Price:    p.PricePerSlice,
 			Slices:   p.Slices,
 			Labels:   make([]int64, len(p.Labels)),
 		}
