@@ -100,7 +100,6 @@
 	</template>
 
 	<script>
-		var appRouter = document.querySelector('app-router');
 		Polymer({
 			is: 'poly-nav',
 			properties: {
@@ -116,6 +115,7 @@
 				}
 			},
 			attached: function(active) {
+				var appRouter = document.querySelector('app-router');
 				var activePath = appRouter.activeRoute.getAttribute('path');
 				var activeNavItems = this.getContentChildren('#items').forEach(function(navItem) {
 					var navPath = navItem.getAttribute('path');

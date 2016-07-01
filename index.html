@@ -10,6 +10,7 @@
 		<script src="/bower_components/webcomponentsjs/webcomponents-lite.js"></script>
 		<script> window.Polymer = { dom: 'shadow' }; </script>
 		<link rel="stylesheet" href="/bower_components/font-awesome/css/font-awesome.css">
+		<link rel="import" href="/bower_components/app-router/app-router.html">
 		<link rel="import" href="/src/elements.html">
 		<style>
 			* {
@@ -44,9 +45,10 @@
 
 		<polypi-app>
 			<app-router mode="hash">
-				<app-route path="/" element="page-home"></app-route>
+				<app-route path="/home" element="page-home"></app-route>
 				<app-route path="/pies" element="page-pies"></app-route>
 				<app-route path="/pies/:pieId" element="page-pie"></app-route>
+				<app-route path="*" redirect="/home"></app-route>
 			</app-router>
 		</polypi-app>
 	</body>
