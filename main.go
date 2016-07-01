@@ -26,11 +26,11 @@ func main() {
 		Addr: "localhost:6379",
 	})
 
-	index := http.FileServer(NewOneFile("index.html"))
-	r.Methods("GET").Path("/").Handler(index)
+	index := oneFile("./static/index.html")
+	r.Methods("GET").Path("/").HandlerFunc(index).Name("index")
 
 	static := http.StripPrefix("/static/", http.FileServer(http.Dir("./static")))
-	r.Methods("GET").Path("/static/").Handler(static)
+	r.Methods("GET").PathPrefix("/static/").Handler(static).Name("static")
 
 	pie := piehandler.Handler{DS: client}
 	r.Methods("GET").Path("/pie/{id:[0-9]+}.json").Handler(pie).Name("pie")
@@ -44,21 +44,8 @@ func main() {
 	log.Fatal(s.ListenAndServe())
 }
 
-// OneFile is like http.Dir, but always serves the same file
-type OneFile struct {
-	file string
-	dir  http.FileSystem
-}
-
-// Open impliments the http.FileSystem interface
-func (of OneFile) Open(_ string) (http.File, error) {
-	return of.dir.Open(of.file)
-}
-
-// NewOneFile creates a OneFile
-func NewOneFile(name string) OneFile {
-	return OneFile{
-		file: name,
-		dir:  http.Dir(""),
+func oneFile(name string) func(http.ResponseWriter, *http.Request) {
+	return func(rw http.ResponseWriter, r *http.Request) {
+		http.ServeFile(rw, r, name)
 	}
 }
